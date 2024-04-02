@@ -1,73 +1,143 @@
 package TpV00;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class Juego {
-    public int[][] cuadricula;
+    private Tablero tablero;
     private int puntaje;
     private boolean gameOver;
-    private Random random;
 
     public Juego() {
-        cuadricula = new int[4][4];
+        tablero = new Tablero(new int[4][4]);
         puntaje = 0;
         gameOver = false;
-        random = new Random();
         iniciarJuego();
     }
 
     private void iniciarJuego() {
         // Inicializa la cuadrícula con dos números aleatorios al inicio del juego
-        agregarNumero();
-        agregarNumero();
-    }
-
-    public  void agregarNumero() {
-        // Lista de todas las celdas vacías
-        List<int[]> celdasVacias = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (cuadricula[i][j] == 0) {
-                    celdasVacias.add(new int[]{i, j});
-                }
-            }
-        }
-
-        // Si hay celdas vacías, elige una aleatoriamente y agrega un nuevo número (2 o 4)
-        if (!celdasVacias.isEmpty()) {
-            int indiceAleatorio = random.nextInt(celdasVacias.size());
-            int[] celda = celdasVacias.get(indiceAleatorio);
-            int fila = celda[0];
-            int columna = celda[1];
-            cuadricula[fila][columna] = (random.nextDouble() < 0.9) ? 2 : 4; // Probabilidad del 90% para el 2 y 10% para el 4
-        }
+        tablero.agregarNumero();
+        tablero.agregarNumero();
     }
 
     public void moverArriba() {
-        // Implementa la lógica para mover los números hacia arriba
-        // ...
+        for (int j = 0; j < 4; j++) {
+            // recorre las filas desde la primera fila a la ultima
+            for (int i = 1; i < 4; i++) {
+                if (tablero.valorCelda(i, j) != 0) {
+                    int fila = i - 1;
+                    while (fila >= 0 && tablero.valorCelda(fila, j) == 0) {
+                        fila--;
+                    }
+                    // Comprueba si las celdas se pueden combinar
+                    if (fila >= 0 && tablero.valorCelda(fila, j) == tablero.valorCelda(i, j)) {
+                        // Combina las celdas y actualiza el puntaje
+                        tablero.setValorCelda(fila, j, 2 * tablero.valorCelda(i, j));
+                        if (puntaje < tablero.valorCelda(fila, j)) {
+                            puntaje = tablero.valorCelda(fila, j);
+                        }
+                        tablero.setValorCelda(i, j, 0);
+                    } else {
+                        // Mueve la celda hacia arriba
+                        tablero.setValorCelda(fila + 1, j, tablero.valorCelda(i, j));
+                        if (fila + 1 != i) {
+                            tablero.setValorCelda(i, j, 0);
+                        }
+                    }
+                }
+            }
+        }
+        tablero.agregarNumero();
     }
 
     public void moverAbajo() {
-        // Implementa la lógica para mover los números hacia abajo
-        // ...
+        for (int j = 0; j < 4; j++) {
+            // recorre las filas desde la cuarta fila a la 1ra
+            for (int i = 3; i >= 0; i--) {
+                if (tablero.valorCelda(i, j) != 0) {
+                    int fila = i + 1;
+                    while (fila < 4 && tablero.valorCelda(fila, j) == 0) {
+                        fila++;
+                    }
+                    // Comprueba si las celdas se pueden combinar
+                    if (fila < 4 && tablero.valorCelda(fila, j) == tablero.valorCelda(i, j)) {
+                        // Combina las celdas y actualiza el puntaje
+                        tablero.setValorCelda(fila, j, 2 * tablero.valorCelda(i, j));
+                        if (puntaje < tablero.valorCelda(fila, j)) {
+                            puntaje = tablero.valorCelda(fila, j);
+                        }
+                        tablero.setValorCelda(i, j, 0);
+                    } else {
+                        // Mueve la celda hacia arriba
+                        tablero.setValorCelda(fila - 1, j, tablero.valorCelda(i, j));
+                        if (fila - 1 != i) {
+                            tablero.setValorCelda(i, j, 0);
+                        }
+                    }
+                }
+            }
+        }
+        tablero.agregarNumero();
     }
 
     public void moverIzquierda() {
-        // Implementa la lógica para mover los números hacia la izquierda
-        // ...
+        for (int i = 0; i < 4; i++) {
+            for (int j = 1; j < 4; j++) {
+                if (tablero.valorCelda(i, j) != 0) {
+                    int columna = j - 1;
+                    while (columna >= 0 && tablero.valorCelda(i, columna) == 0) {
+                        columna--;
+                    }
+                    // Comprueba si las celdas se pueden combinar
+                    if (columna >= 0 && tablero.valorCelda(i, columna) == tablero.valorCelda(i, j)) {
+                        // Combina las celdas y actualiza el puntaje
+                        tablero.setValorCelda(i, columna, 2 * tablero.valorCelda(i, j));
+                        if (puntaje < tablero.valorCelda(i, columna)) {
+                            puntaje = tablero.valorCelda(i, columna);
+                        }
+                        tablero.setValorCelda(i, j, 0);
+                    } else {
+                        // Mueve la celda hacia arriba
+                        tablero.setValorCelda(i, columna + 1, tablero.valorCelda(i, j));
+                        if (columna + 1 != j) {
+                            tablero.setValorCelda(i, j, 0);
+                        }
+                    }
+                }
+            }
+        }
+        tablero.agregarNumero();
     }
 
     public void moverDerecha() {
-        // Implementa la lógica para mover los números hacia la derecha
-        // ...
+        for (int i = 0; i < 4; i++) {
+            for (int j = 3; j >= 0; j--) {
+                if (tablero.valorCelda(i, j) != 0) {
+                    int columna = j + 1;
+                    while (columna < 4 && tablero.valorCelda(i, columna) == 0) {
+                        columna++;
+                    }
+                    // Comprueba si las celdas se pueden combinar
+                    if (columna < 4 && tablero.valorCelda(i, columna) == tablero.valorCelda(i, j)) {
+                        // Combina las celdas y actualiza el puntaje
+                        tablero.setValorCelda(i, columna, 2 * tablero.valorCelda(i, j));
+                        if (puntaje < tablero.valorCelda(i, columna)) {
+                            puntaje = tablero.valorCelda(i, columna);
+                        }
+                        tablero.setValorCelda(i, j, 0);
+                    } else {
+                        // Mueve la celda hacia arriba
+                        tablero.setValorCelda(i, columna - 1, tablero.valorCelda(i, j));
+                        if (columna - 1 != j) {
+                            tablero.setValorCelda(i, j, 0);
+                        }
+                    }
+                }
+            }
+        }
+        tablero.agregarNumero();
     }
 
-    public int[][] getCuadricula() {
-        return cuadricula;
+    public int valorCelda(int i, int j) {
+        return tablero.valorCelda(i, j);
     }
 
     public int getPuntaje() {
@@ -76,6 +146,10 @@ public class Juego {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public boolean youWin() {
+        return puntaje == 32;
     }
 
 }
