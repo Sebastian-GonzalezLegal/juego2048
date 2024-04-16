@@ -1,14 +1,21 @@
 package TpV00;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 public class Juego {
     private Tablero tablero;
     private int puntaje;
     private boolean gameOver;
+    private int record;
 
     public Juego() {
         tablero = new Tablero(new int[4][4]);
         puntaje = 0;
         gameOver = false;
+        record= this.leerTxtRecord();
         iniciarJuego();
     }
 
@@ -17,7 +24,7 @@ public class Juego {
         tablero.agregarNumero();
         tablero.agregarNumero();
     }
-
+    
     public void moverArriba() {
         for (int j = 0; j < 4; j++) {
             // recorre las filas desde la primera fila a la ultima
@@ -31,9 +38,7 @@ public class Juego {
                     if (fila >= 0 && tablero.valorCelda(fila, j) == tablero.valorCelda(i, j)) {
                         // Combina las celdas y actualiza el puntaje
                         tablero.setValorCelda(fila, j, 2 * tablero.valorCelda(i, j));
-                        if (puntaje < tablero.valorCelda(fila, j)) {
-                            puntaje = tablero.valorCelda(fila, j);
-                        }
+                        puntaje += tablero.valorCelda(fila, j);
                         tablero.setValorCelda(i, j, 0);
                     } else {
                         // Mueve la celda hacia arriba
@@ -61,9 +66,7 @@ public class Juego {
                     if (fila < 4 && tablero.valorCelda(fila, j) == tablero.valorCelda(i, j)) {
                         // Combina las celdas y actualiza el puntaje
                         tablero.setValorCelda(fila, j, 2 * tablero.valorCelda(i, j));
-                        if (puntaje < tablero.valorCelda(fila, j)) {
-                            puntaje = tablero.valorCelda(fila, j);
-                        }
+                        puntaje += tablero.valorCelda(fila, j);
                         tablero.setValorCelda(i, j, 0);
                     } else {
                         // Mueve la celda hacia arriba
@@ -90,9 +93,7 @@ public class Juego {
                     if (columna >= 0 && tablero.valorCelda(i, columna) == tablero.valorCelda(i, j)) {
                         // Combina las celdas y actualiza el puntaje
                         tablero.setValorCelda(i, columna, 2 * tablero.valorCelda(i, j));
-                        if (puntaje < tablero.valorCelda(i, columna)) {
-                            puntaje = tablero.valorCelda(i, columna);
-                        }
+                        puntaje += tablero.valorCelda(i, columna);
                         tablero.setValorCelda(i, j, 0);
                     } else {
                         // Mueve la celda hacia arriba
@@ -119,9 +120,7 @@ public class Juego {
                     if (columna < 4 && tablero.valorCelda(i, columna) == tablero.valorCelda(i, j)) {
                         // Combina las celdas y actualiza el puntaje
                         tablero.setValorCelda(i, columna, 2 * tablero.valorCelda(i, j));
-                        if (puntaje < tablero.valorCelda(i, columna)) {
-                            puntaje = tablero.valorCelda(i, columna);
-                        }
+                        puntaje += tablero.valorCelda(i, columna);
                         tablero.setValorCelda(i, j, 0);
                     } else {
                         // Mueve la celda hacia arriba
@@ -135,7 +134,9 @@ public class Juego {
         }
         tablero.agregarNumero();
     }
+    
 
+    
     public int valorCelda(int i, int j) {
         return tablero.valorCelda(i, j);
     }
@@ -143,13 +144,59 @@ public class Juego {
     public int getPuntaje() {
         return puntaje;
     }
+    
+    //setea el gameOver segun la disponibilidad del tablero o las posibilidades de movimiento del jugador
+    private void setGameOver() {
+    	if(tablero.hayEspacioVacios() || tablero.hayMovPosible()) {
+    		gameOver = false;
+    	}else {
+    		gameOver = true;
+    	}
+    }
 
     public boolean isGameOver() {
+    	setGameOver();
         return gameOver;
     }
 
     public boolean youWin() {
-        return puntaje == 32;
+        return tablero.algunaCeldaLlegoa2048();
     }
+    
+    public int getRecord() {
+    	return this.generarYGuardarRecord();
+    }
+    
+    private int generarYGuardarRecord(){
+    	if(this.record  < this.puntaje) {
+    		this.record=this.puntaje;
+            this.editarTxtRecord();
+    	}
+    	return this.record;
+	} 
+    
+    public int leerTxtRecord() {
+   	 String ruta="src/Resources/record.txt";
+        try (FileReader fr = new FileReader(ruta)) {
+             BufferedReader br = new BufferedReader(fr);
+             // Lectura del txt
+             record = Integer.parseInt(br.readLine());
+         }
+          catch(Exception e){
+             e.printStackTrace();
+          }
+        System.out.println(record);
+        return record;
+   }
+   
+    public void editarTxtRecord() {
+    	try{
+			PrintWriter writer = new PrintWriter(new FileWriter("src/Resources/record.txt",false));
+			writer.append(String.valueOf(this.record));
+			writer.close();
+			System.out.println("Se escribió correctamente en el archivo.");
+		}catch(Exception e){
+			System.out.println("Error añadiendo datos al fichero");}
+		}
 
 }

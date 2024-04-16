@@ -38,4 +38,37 @@ public class Tablero {
     public void setValorCelda(int fila, int columna, int valor) {
     	tablero[fila][columna]=valor;
     }
+    
+    public boolean hayMovPosible() {
+        for (int f = 0; f < 4; f++) {
+            for (int c = 0; c < 4; c++) {
+            	if((f>0 && tablero[f][c] == tablero[f-1][c]) ||
+            	  (c>0 && tablero[f][c] == tablero[f][c-1]) ||
+            	  (f<3 && tablero[f][c] == tablero[f+1][c])||
+            	  (c<3 && tablero[f][c] == tablero[f][c+1]))
+            		return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean hayEspacioVacios() {
+        for (int f = 0; f < 4; f++) {
+            for (int c = 0; c < 4; c++) {
+            	if (tablero[f][c]==0)
+            		return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean algunaCeldaLlegoa2048() {
+        for (int f = 0; f < 4; f++) {
+            for (int c = 0; c < 4; c++) {
+            	if (tablero[f][c]==2048)
+            		return true;
+            }
+        }
+        return false;
+    }
 }
